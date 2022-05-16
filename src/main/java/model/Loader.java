@@ -65,7 +65,7 @@ public class Loader {
 
         try (var outputStream = new FileOutputStream(outputFile)) {
             Map options = new HashMap();
-            options.put(XMLResource.OPTION_SCHEMA_LOCATION, Boolean.FALSE);
+            options.put(XMLResource.OPTION_SCHEMA_LOCATION, Boolean.FALSE); // How to include the schema location ???
             try {
                 resource.save(outputStream, options);
             } catch (IOException e) {
