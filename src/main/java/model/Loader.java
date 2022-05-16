@@ -22,7 +22,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Loader {
@@ -47,9 +49,12 @@ public class Loader {
         }
 
         System.out.println();
-        System.out.println();
+
+        var descriptions = descriptions(resource);
+        System.out.println("Count of all elements in the model: %d".formatted(descriptions.size()));
+
         System.out.println("List model content:");
-        logAllContent(resource);
+        descriptions.forEach(System.out::println);
 
         // Add content
         EFactory factoryInstance = ecorePackage.getEFactoryInstance();
@@ -75,15 +80,18 @@ public class Loader {
         }
     }
 
-    static void logAllContent(Resource resource) {
-        log("", resource.getContents());
+    static List<String> descriptions(Resource resource) {
+         return descriptions("", resource.getContents());
     }
 
-    static <T extends EObject> void log(String indent, EList<T> eObjects) {
-        eObjects.forEach(eObject -> log(indent, eObject));
+    static <T extends EObject> List<String> descriptions(String indent, EList<T> eObjects) {
+        return eObjects.stream()
+                .flatMap(eObject -> descriptions(indent, eObject).stream())
+                .toList();
     }
 
-    static <T extends EObject> void log(String indent, T eObject) {
+    static <T extends EObject> List<String> descriptions(String indent, T eObject) {
+        List<String> eltDescriptions = new ArrayList<>();
         String content = indent + eObject.eClass().getName();
         if (eObject instanceof ENamedElement eNamedElement) {
             content = content + " " + eNamedElement.getName();
@@ -94,11 +102,12 @@ public class Loader {
             }
         }
 
-        System.out.println(content);
+        eltDescriptions.add(content);
         var contents = eObject.eContents();
         if (contents != null) {
-            log(indent + "  ", contents);
+            eltDescriptions.addAll(descriptions(indent + "  ", contents));
         }
+        return eltDescriptions;
     }
 
     static EPackage getPackage(Resource res) {
