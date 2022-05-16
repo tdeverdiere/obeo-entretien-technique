@@ -97,7 +97,7 @@ public class Loader {
             content = content + " " + eNamedElement.getName();
         } else if (eObject instanceof DynamicEObjectImpl dynamicEObject) {
             var name = dynamicEObject.dynamicGet(EcorePackage.EATTRIBUTE__NAME);
-            if (name != null) {
+            if (name != null && name instanceof String) {
                 content = content + " " + name;
             }
         }
